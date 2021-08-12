@@ -1,0 +1,10 @@
+1. What is Splunk?
+	- Splunk gather data (structured, unstructured, semi-structured) and alows user to create meaningful insights via rich reports, live dashboards, and alerts that triggerd in time to time.
+	- Splunk can capture data from cloud or on-premise installations and can clean, format, and transform that data.
+	- It can use as intelligence tool, data analatics tool, data science tool, security tool, management tool, Etc.
+	- It's main functions are
+		+ Parsing machine data
+		+ Parsing Typical data genarated by machines
+		+ Parsing cloud log data that encrypted
+		
+	- When encrypted data meet, we can train splunk to find certain pattern of the encrypted data and label those patterns as fields.

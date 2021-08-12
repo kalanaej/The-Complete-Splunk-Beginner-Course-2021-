@@ -1,0 +1,154 @@
+# Phase 1
+	Steps of deploying Splunk
+		1. Splunk deployment models
+		2. Splunk storing data on disks
+		3. Splunk licensing
+		4. Splunk apps and add-ons
+		
+	Configuration files in Splunk
+		- Everything Splunk does is condusted by configuration files.
+		- These are text documents that stored in "etc/" location and with ".conf" extension.
+		- Configuration levels
+			+ System
+			+ Global
+			+ App
+			+ App specific
+		- Based on the current app splunk decides wich configurationtype is most suitable. To do that splunk has tool called "B"
+		- You never should edit the .conf files in /etc/<app name>/default directory.
+		- You can edit .conf files in /etc/<app name>/local directory.
+		
+	Configuration file structure
+
+		[Stanza]
+		Attribute = Value
+		
+		[Stanza]
+		Attribute = Value
+
+# Phase 2	
+	1. Deployment Models
+		- There are two type of deployments
+			i) cloud deployment.
+			ii) On-premise deployment.
+			
+		- Those deployment types have unlimited scalability. There for it does not matter which option need to be selected.
+		
+		- Splunk data pipeline
+			i) Input -: Splunk consume data from forwards, uploads, monitors or other types.
+					 -: In this phase splunk does not look at content of the data.
+					 
+			ii) Parsing -: This happen on the index or heavy forwader.
+						-: In here Splunk --> examine the data.
+										  --> Analyzes and transform data.
+										  --> Identifies timestamps.
+										  --> Annotates the data with metadata.
+			iii) Indexing -: In the indexing phase, splunk takes the past data and writes it into indexes
+						  -: Splunk calls these indexes as "buckets"
+						  
+			iv) Searching -: This the phase that users interact with Splunk to search through the data.
+		
+
+# Phase 3	
+	2. Storing data
+
+		i) Index
+			- In splunk, data are store in indexes which is located on disks
+			- Splunk call indexes as buckets.
+			- Splunk has built in indexes and users also can create custom indexes also.
+			- Default indexe use in splunk call "Main".
+			- Also, it has another index called "_internal" to store internal logs and other indexes that comes with splunk.
+			
+		ii) Event
+			- Event is a single raw of data
+			- Events have fields (key, value)
+				 _ _ _ _ _ _ _ _ _ _
+				|  key    |  value  |
+				|---------|---------|
+				|username |	kalana  |
+				|username |  John   |
+				|-------------------|
+			
+			- Splunk add default fields to events. Those ara
+				+ timestamps
+				+ host
+				+ source
+				+ source type
+				
+		* In splunk, an index contains compressed raw data from assosiated index files and those index files are spread into different directories by considering their age. Splunk call those directories as buckets
+		* There are 6 default buckets and we talk about 5 buckets among them.
+		
+			1. Hot bucket -: Contains newly indexed data. 
+						  -: An index can have one or more hot buckets.
+						  -: This is the place that we interact with data (Read/Write)
+						  -: Location : $SPLUNK_HOME/var/lib/splunk/defaultdb/db/*
+						  
+			2. Warm bucket -: Contains data that rolled from hot bucket with no active writing (Read)
+						   -: An index can have many warm buckets.
+						   -: Location : $SPLUNK_HOME/var/lib/splunk/defaultdb/db/*
+						   
+			3. Cold bucket -: Contain data that rolled from warm bucket and moved to a different location. (Location changed)
+						   -: An index can have many cold buckets.
+						   -: Location : $SPLUNK_HOME/var/lib/splunk/defaultdb/colddb/*
+						   
+			4. Frozen bucket -: Contain data that rolled from cold bucket.
+							 -: The indexer deletes frozen buckets by dafault after a period. But you can achive them first if you want.(Delete/Archived)
+							 -: Location : You need to specify the location
+							 
+			5. Thawed bucket -: Contain data that restored from an achive.
+							 -: Location : $SPLUNK_HOME/var/lib/splunk/defaultdb/thaweddb/*
+			
+			6. Fish bucket -: Not explained in this course.
+			
+			
+		* You can done below things with buckets
+			1. Retirement.
+			2. Achive.
+			3. Back up.
+			4. Configure index size.
+			5. Partition index data.
+			
+
+# Phase 4
+	4. Splunk Apps and add-ons
+		i) Apps
+			- Visualization
+			- Analysis
+			- Reports and Dashboards
+			- User Interfaces
+			
+		ii) Add-ons
+			- Data enrichment
+			- Tags
+			- Data models
+			- Datasets
+			
+		* App is a collection of Splunk configuration files
+		* An add-on is a subset of a app. It specify data collection but do not have any GUI because they are always part of a large app.
+		* Splunk app can be found from splunkbase.com
+		
+
+# Phase 6
+	5. Go to Settings > Licensing. In there, you can manupilate you licensing.
+	6. If you purchased any license, you can add that by cliccking "Add license".
+	7. If you want to change your license type to heavy forwarder license, you can click "Change license group". Then select "Forwarder license".
+	8. If you have other license server you can change your current server by click on "Change to slave" button.
+	
+	
+# Phase 7
+	9. To add data, go to Settings > Add Data.
+	10. Click "Upload" button to add data. Then upload "homeworkdataset.csv" that given in course work. After that click "Next"
+	11. Next tab, Splunk will detect the source type of the columns automatically. However you can edit source type if you want.
+	12. If dataset is unstructured, Splunk try to identify patterns on it and add in to key-value pairs. Then click "Next" again to proceed forward.
+	13. In this new section, you can view your host name which is your local machine name. However, change that name into "splunkmain" to follow the course easily.
+	14. You can also create or change the index type in this section if you want. Then click "Next".
+	15. In this new section you can view the summary. If there are any faults go back to previous section and change it. Click "Next".
+	16. In this section, you can do given action in the panel or go to your home. Click on "Start Searching" button.
+	17. Now, in your left hand side you can view fields browser and right hand side you can view event browser.
+	18. In event browser, we can expand any details to get more information.
+	
+
+# Phase 8
+	1. To install an app, go to home and click on "Find More Apps" that located in left hand side.
+	2. Search "AWS" and select "splunk app for AWS" and then install it. You have to give your "Web login" details (NOT LOCAL LOGIN) to proceed.
+	3. You can now view your app on splunk home left hand side. Click on the app and click "Acknowledge".
+	

@@ -1,0 +1,14 @@
+# Phase 1
+	1. Navigate to https://www.splunk.com/
+	2. Click on "Free Splunk" button.
+	3. Create new splunk account if you don't have one. 
+	4. After validating you email dashboard will shows up and click "Access instance" button.
+	5. You can loigin into cloud dashboard using your email and password. (This is not mandatory)
+	
+
+# Phase 3
+	1. Navigate to https://www.splunk.com/
+	2. Click on Free Splunk. Click on Splunk Enterprise.
+	3. Download Windows 64 bit version.
+	4. Install Splunk Enterprise on your local machine. Then open it.
+	5. Give login creditionals for local server to login to your dash board. 
