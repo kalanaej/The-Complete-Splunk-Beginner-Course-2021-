@@ -1,0 +1,50 @@
+# Phase 1
+	1. Splunk data pipeline consists
+		- inputs
+		- parsing
+		- indexing
+		- search
+		
+	2. We call that IPIS.
+	
+		* Inputs -: In here, splunk software consumes data. It requires raw data drom source and breaks into 64K blocks and annotates each block with some metadata keys.
+				 -: The keys apply to whole input source. They include host source and sourcetype index.
+				 -: There are several input categories
+						  i) File and Directory inputs - Monitor files and directories in both localy and remotely. Also it can monitor compressed files.
+						 ii) Upload                    - upload files to splunk. This option use for one-time analysis.
+						iii) MonitorNoHandle           - Available for windows host only. It monitor files and directories in the system that rotates automatically.
+						 iV) Network inputs            - Use to send syslog files over TCP or UDP. Also can send data through SNMP events.
+						  v) Windows inputs            - Splunk can consume windows event logs, registry data, active directory, Management interface, performance monitoring.
+						 vi) Other inputs              - Metrics, Scripted inputs from APIs or message queues, Modular inputs, HTTP event collector.
+
+
+# Phase 2
+	1. There are sevaral ways to configure inputs
+		i) Through an app     - When you installed an app, it can have pre-configured inputs. 
+	   ii) Through Splunk web - Settings > data inputs, settings > add data
+	  iii) Through CLI        - Using splunk commands
+	   iv) Through inputs.conf file.
+	    v) Through Guided Data Inboarding tool (GDO) - Using data input wizard.
+		
+
+# Phase 3
+	1. There are two main types of Splunk forwarder.
+		 i) Universal forwarder - Collects data from a data source and forwards it to reciever.
+								- This forwarder not the part of Splunk. Therefore, this is installed in separatly.
+								- This forwarder does not search index or parse any data. It is only captures the data and forwards to something else.
+								- To configure this on Splunk, in search bar type "universal forwarder" and then dowload and install. Start the UF.
+								- We can setup it which data should collect and to where that data should go.
+								
+		ii) Heavy forwarder     - This is an advance type of forwarder.
+								- This is part of Splunk and can apply through the forwarder lisence.
+								- This cannot only forward data but can parse data and route data based on criteria.
+								
+								
+# Phase 5
+	1. Go to https://www.splunk.com/en_us/download.html site and click on "Free Splunk". Then go to bottom of the page and download "Splunk Universal Forwarder" 64 bit version.
+	2. In installing wizard check all options except Active directory Monitoring.
+	3. Give your local login details in next page.
+	4. In Recieving Indexer page give your localhost and port number of Splunk. Then install it.
+	5. In splunk dashboard click on "Search & Reporting" to check whether universal forwarder working or not.
+	6. Click on "Data summary". In host summary, we can see our desktop hostname. In my case it is "splunkmain". Then click on that hostname.
+	7. You can see, we are recieving data. This happens cauese of universal forwader.
