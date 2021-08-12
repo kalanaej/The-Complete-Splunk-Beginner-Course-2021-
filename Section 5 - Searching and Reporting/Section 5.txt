@@ -1,0 +1,327 @@
+# Phase 1 - The Anatomy of a Search
+
+	1. What is Search Processing Language (SPL)?
+		- It is the primary way that users interact with data in Splunk.
+		
+		- We use splunk search to
+				+ Query
+				+ Calculate
+				+ Transform
+				+ Oraganize
+				+ Visualize
+				+ Manupilate
+		  data in splunk.
+		  
+		- And we primarly do this tasks through "Search and Reporting" app. It is built-in app in Splunk. In this app we can do
+				+ Index data.
+				+ Build reports and visualization
+				+ Configure alerts.
+				+ Create dashboards and Etc.
+				
+	2. What is Anatomy of a search?
+		- With this search option we can reduce the complexisity of our data and can gain optimal output.
+		- For further details look lecture slides.
+		
+		
+# Phase 2 - Time
+
+	1. Splunk searches in the data for timestamps. And thsese timestamps are converted into Unix time and stored in the underscore time field.
+	
+	2. When you search underscore time field, Splunk converts that time into a human readable format.
+	
+	3. We cannot do data analytucs without time. Splunk can manupilate time with data by considering these
+		+ Option 1 -: Looks for timestamps in the event data (option 1)
+		+ Option 2 -: Looks for Source name or file name to check if there is an any time stamps. (If option 1 not exist this happen)
+		+ Option 3 -: Looks for file modification time. (If option 1 and 2 not exist this happen)
+		+ option 4 -: As last option if option 1, 2 and 3 not working, it use current system time
+		
+	4. To setup timestaps, we can use "time range picker".
+	
+	5. We can also specify time ranges using SPL.
+		ex -: earliest=<%m/%d/%Y:%H:%M:%S> latest=<%m/%d/%Y:%H:%M:%S> 
+			 (earliest 01/14/2021:16:32:00 latest 07/14/2021:21:00:00)
+			 
+	6. We can specify relatives ranges also
+		ex -: -30m (30 minutes ago)
+			  -7d (7 days ago)
+			  +1d (1 day from now)
+			  
+			  
+# Phase 3 - Time Variables
+
+	1. Time variables
+		%c - Date and time in the format of the server
+		%H - 24 hour
+		%I - 12 hour
+		%M - (0 - 59) Minutes
+		%p - AM or PM
+		%S - (0 - 59) seconds
+		
+	2. Date variables
+		%F - Date in ISO format (yyyy-mm-dd)
+		%A - name of the day (ex -: Monday)
+		%d - Day of the month (1 - 31)
+		%j - day of the year
+		%B - Month name (January)
+		%m - Month (1 - 12)
+		%y - year as two digits (00 - 99)
+		%Y - Year as four digits (yyyy)
+		
+	2. We can convert time into format that we want using
+		
+		ex -: | eval <new field> = strftime(<time field>, "<format>")
+			  | eval New_Time = strftime(_time, "%I:%M, %p")
+			  
+		exersice -: %A, %B %d, %Y - %I:%M %p
+		answer -: Monday, January 01, 1900 - 5.00 PM
+		
+		
+# Phase 4 - Basic Searching
+
+	1. Using basic searching we can filter metadata fields from datasets.
+		ex -: Index, Host, Source, SourceType
+		
+	2. There are couple of broad search items (search tearms)
+		- Keywords : failed, error
+		- Phrases : "failed login"
+		- Fields : key-values pair
+		- Wildcards : *ailed, fail*, user=*
+		- Booleans : AND, OR, NOT
+		
+	3. Using those we can build up the pipe and then after we can start doing the search commands (Commands)
+		- chart/timechart : returns data in tabular output for charting
+		- rename : Renames a specific field
+		- sort : sort results by specified fields
+		- stats : statistics
+		- eval : Calculates an expression
+		- dedup : Removes duplicates
+		- Table : Buildup an table with specified fields
+		
+	4. When constructing basic search, there are two parts
+		i) Search tearms
+		ii) Commands
+		
+		ex -: Search tearms | Commands
+			  host=myhost.lcl source=hstlogs user=* (message=fail* OR message=lock*) | table _time user message | sort -_time
+			  
+			  output can view in lecture slides (5.pptx)
+			  
+			  
+# Phase 5 - Fields and Field Extractions
+
+	1. Fields represent key-value pair.
+		ex -: user = john
+			  ip_add = 192.154.60.2
+			  
+	2. But unstructure data doesnt have key-value pair. Splunk identify patterns on it.
+	
+	3. Splunk has three levels of fields discovery, which is called "search modes"
+		  
+		  i) Fast	 -: If your search contain transforming commands (stats, charts or time charts) this mode activate.
+					 -: If you know what is to search and you specify the search this mode is better. 
+		  
+		 ii) Smart   -: Default mode. 
+					 -: Discover fields by based on structure of that user search. 
+					 -: Discover fields in the data by looking for key-value pairs
+		
+		iii) Verbose -: This mode can use, when you do not know much about the data and need to Splunk to use its full resources to auto discovering fields.
+					 _: This search method is slow than other methods.
+					 
+	4. Field extraction can done by using "Splunk Field Extractor". It uses regular expressions (regex) to extract fields based on patterns.
+	
+	
+# Phase 6 - Demo (1/5): Search and Reporting App
+
+	1. In your Splunk dash board click and navigate to "Search & Reporting"
+	
+	2. In there, you can see some tabs in upper.
+				
+		+ Analytics -: analytics workspace
+		+ Datasets -: Show us all saved data sets.
+		+ Reports -: Show all saved reports
+		+ Alerts -: Show all saved alerts
+		+ Dashboards -: Show all saved dashboards.
+				
+	3. Datasets, Reports, Alerts, Dashboards can created by you or created by another app that you installed.
+	
+	
+# Phase 7 - Demo (2/5): Creating Tables and Pivots
+
+	1. You are in Search & Reporting tab. Therefore, In search bar type
+
+			host=splunkmain
+			
+	   In time picker select "All time". Then start searching.
+	   
+	2. In upper section click on "Create Table View". In the table view, we can manipulate this table by adding anything that we think. Like SRCIP, state, Etc. 
+	
+	3. We can uncheck host, source, sourcetype because They are same in the every field.
+	
+	4. Click "Done" button and click "Save" button. Give a name to table (I used "simple_table").
+
+	5. Now click on the permission to expand the permission settings.
+	
+	6. Select "all apps" and give "Everyone" to read access and save.
+	
+	7. Now, if you go to "Datasets" tab you can see simple_table in there along side with other tables. You can view data by click on the simple_table link name.
+	
+	8. If you want to visualize the table, you can expand "Explore" and select "Visualize with Pivot".
+	
+	9. In there, change the Filters to "All time". In "Split Rows", click on "SRCIP" and give label name as "IP addresss" and click the "Add to Table" button.
+	
+	10. Open "Split Rows" again and select "State". Give the label name as "US state" and click the "Add to Table" button.
+	
+	11. You can create charts using that data. Chats options can select by liking left side of our Splunk server.
+	
+	12. Charts seems to be more complicated. Therefore, go to dataset again and remove ip address option. Then add "_time" which is in "Split Rows". 
+	
+	13. Use Bar or Column chart now and change x-axis to "_time". Change Color to "SRCIP" and select "Stack Mode" as "stacked". Now you have better view.
+	
+	14. You can modify the chart by picking specific time range if you want.
+	
+	
+# Phase 8 - Demo (3/5): Basic Searching and Creating a Dashboards
+
+	1. In here, we are going to do solving a bussiness problem using basic search.
+	
+	2. Bussiness asked us "What the backup duration was for each domain over the last 30 days?"
+	
+	3. Go to "Search & Reporting" app.
+	
+	4. Click on "Data Summary" and click on host name.
+	
+	5. In "time picker", choose "last 30 days".
+	
+	6. According to bussiness question, we need "backupduration" field and "domain" field. We can use search bar to extract that data. 
+	
+			host=splunkmain backupduration=* domain=*
+		
+	7. Try to create table view with in it by inluding "_time" also.
+	
+			host=splunkmain backupduration=* domain=* | table _time backupduration
+		
+	8. To visualize data, click on "Visualization" tab in above the table. You can see Splunk built column chart already. Change chart type into line chart to see different kind of view.
+	
+	9. You can see line chart is dissconnected from middle. To prevent that, click on "Format tab" and in "Null Values" line, select "zero". Now you can see chart is connected.
+	
+	10. Now save that as Dashboard Panel. (Save as > New Dashboard). Select dashboard type as classic and give Dashboard title and Panel title and click "Save to Dashboard".
+	
+	11. Don't view the dashboard yet. Because business wanted information about domain and in our chart domain is not included yet. To do that search this query.
+	
+			host=splunkmain backupduration=* domain=* | table _time backupduration domain
+		
+	12. Now got to "Statistics" tab and save it as dashboard. Click on "Save as" and select "Existing Dashboard". Select "Backups" and then give a panel title. Save it.
+	
+	13. Do not view the dashboard yet beacuse we need to display the average time that backups are taking. To that, in search field type,
+	
+			host=splunkmain backupduration=* domain=* | stats avg(backupduration)
+			
+	14. Visualize the average value by navigate to "Visualization" tab and change chart type into "Single Value"
+	
+	15. Now click on "Format" and change the caption into "Average Backup Duration, Last 30 Days". Also change the "Number Format" to 2 decimal places. Also set unit as "Hours".
+	
+	16. Also go to "Colors" and "Use colors = yes". Change the "color mode" as color the background. Set color ranges to green = (0-8), Yellow = (8-15)
+	
+	17. Save as > Existing Dashboard > Select "Backups" > Panel Title "Average Duration, Last 30 Days" > Save to Dashboard.
+	
+	18. Don't view the dashboard. Try to make the panel that shows maximum back up duration by domain. We can use search bar again and this time type,
+	
+			host=splunkmain backupduration=* domain=* | stats max(backupduration) by domain
+			
+	19. Click on format and change the caption as "Domain with Longest Backup Duration"
+	
+	20. Save as > Existing Dashboard > Select "Backups" > Panel Title "Most Problematic Domain" > Save to Dashboard.
+	
+	21. Noe view the dashboard. You can now edit the dashboard by clcik on "Edit" button. Get single values to top and Etc. Then save that dashboard by clicking "Save".
+	
+	22. To edit table click "Edit" button and then click "search icon" on table when cursor put on. Edit the table search value as
+	
+			host=splunkmain backupduration=* domain=* | table _time backupduration domain | head 5
+			
+	23. Apply the changes.
+	
+
+# Phase 9 - Demo (4/5): Time
+
+	1. In here we are going to manipulate time format and then let it extract a field. 
+	
+	2. Therefore go bach to search and change the time picker as "All Time". Then type,
+	
+			host=splunkmain | table _time
+			
+	3. You can see, we have 24 hour clocl. Lets make it into 12 hour clock and two digits year. Also compare the old time setup and new time setup.Therefore, type
+	
+			host=splunkmain | eval new_time=strftime(_time, "%m-%d-%y %I:%M%p") | table _time new_time
+			
+
+# Phase 10 - Demo (5/5): Field Extractions
+
+	1. In here, we are going to test field extractor.
+	
+	2. To do that we can use Splunk internal logs. Therefore, go to search, select "last 24 hours" and type,
+	
+			index=_internal
+			
+	3. In results Go to Field section (left hand side) and click on "+Extract New Fields". In there, select source type as "splunk_web_access". Select the first sample event.
+	
+	4. After that, click next that exist in top. Select "Regular Expression" and click next.
+	
+	5. Now, we need to highlight the values to create fields. Therefore, select a value and give a name (in my case, I selected firefox and give it a name as "protocol"). Now, you can see all the list that include our given name (firefox). Click next
+
+	6. In this window click "All apps" under permission and give "Everyone" to read write permissions. Then click finish.
+	
+	7. Now click on "Explore the fields I just created in Search" link.
+	
+	8. It navigate to our splunk internal logs but you can see now protocol is there. To view protocol list with time. Edit the search bar as,
+	
+			index=_* OR index=* sourcetype=splunk_web_access | table _time protocol
+			
+	
+# Phase 11 - Intermediate Searching
+	
+	1. Lets talk about most popular transforming commands that we discussed in Fast Searching.
+		
+		- top   : In splunk sytax is ---> top <field>
+				: Returns the most common value for given field.
+				: Deafault number is 10 and we can customize that. (limit=<number>
+				: Can automatically build a table with "count" and "percent" column.
+				: Can be used with multiple columns.
+				
+		- rare  : In splunk sytax is ---> rare <field>
+				: Opposite of the top. It returns the most uncommon fields. 
+				: Can automatically build a table with "count" and "percent" column.
+				
+		- stats : In splunk sytax is ---> stats <function(field)> BY <field(s)>
+				: for function() line we are bormally use count, avg, max, mean, median, sum, Etc.
+						
+						ex -: | stats avg(marks) BY student
+						
+	2. Go to Splunk "Search and Reporting" and then search "host=splunkmain" to view our dataset.
+	
+	3. In field list select "state" and "usr".
+	
+			host=splunkmain state=* usr=*
+			
+	4. Lets tryout transform commands. Find how many users in each state
+	
+			host=splunkmain state=* usr=* | stats count(usr) BY state 
+			
+	5. User count column name shows as "count(usr)". Therefore, try to make that more readable.
+	
+			host=splunkmain state=* usr=* | stats count(usr) AS cuser BY state 
+			
+	6. Now try to sort that list by cuser ( It show largest value to smallest value)
+	
+			host=splunkmain state=* usr=* | stats count(usr) AS cuser BY state | sort -cuser
+			
+	7. You can visualize that also using column chart or something similar.
+	
+	8. To test "top" command, in field list select "error level" column and "state" column. Then get top 10 states with "critical" error level.
+	
+			host=splunkmain state=* level=critical | top state by level
+			
+	9. You can see "count" and "percent" columns are auto genarated to give us a better understading.
+	
+	10. Lets apply above query to "rare" command also. You can see it is opposite of "top".
+	
+			host=splunkmain state=* level=critical | rare state by level
