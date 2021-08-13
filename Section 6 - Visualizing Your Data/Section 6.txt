@@ -1,0 +1,193 @@
+# Phase 3 - Data Models
+	
+	1. Data models make machine data easier to use.
+	2. They can simplyfy complex data through abstraction.
+	3. Also they can group specific types of data.
+	4. In real world mathematical equations can be define as data model.
+	
+	5. Data models are stack of datasets. Datasets are stacks of knowledge objects. Knowledge objects include
+		- Saved searches.
+		- field extractions
+		- tags and Etc.
+		
+	6. Data model structure is hierarchical. See its structures below.
+	
+			+ Root Events									+ Root Searches
+				- Event Constraints								- Search Constraints	
+				- Event Knowledge								- Search Knowledge
+					+ Chile Events									+ Chile Searches
+						- Constraints									- Constraints
+						- Knowledge Objects								- Knowledge Objects
+						
+			  i) Events                  -: Most commonly used
+			 ii) Event Constraints       -: Must include an index constraint (index=)
+			iii) Searches                -: Splunk saved searches that include transforming commands.
+			 iv) Search Constraints      -: Constrained to the full search string. (Must include index constraint(index=))
+			  v) Transactions            -: Combine multiple events from one or more sources into single event.
+			 vi) Trabsaction Constraints -: Must be legally formed transaction search
+						
+	7. When we discuss about field in data models
+		
+		 i) It can be added to roots and children
+		 
+		ii) Children can inherit all the fields that parent have. To extract new fields we can use,
+				- Auto extracted : Splunk automaticaly detect new fields.
+				- Eval : using eval expression, genarate new fields.
+				- Lookup : using Lookup, genarate new fields.
+				- Regular expression : new fields can extracted by regex
+				
+				
+# Phase 4 - Reporting and Alerting
+
+	1. Reports and alerts are knowledge objects in Splunk.
+	2. We need Splunk Enterprise license to create reports and alerts.
+	
+	3. Report is a saved search that can run on a schedule and perform an action. Some actions are
+		- Send an email to report consumers.
+		- Embed on a web page.
+		- Update a dashboard panel.
+		- Run a script ad Etc.
+		
+	4. You can use alerts in reports to do some informing to conusmers.
+						
+
+# Phase 6 - Demo (1/3): Build a Dashboard with Pivot
+
+	1. In Splunk server home click settings > Data models.
+	
+	2. Chnage "App" context to "All". Now you can see Splunk's Internal logs. To use them you have to change the permission.
+	
+	3. Therefore, click on "Edit">"Edit permission" in "Action" field that infront of splunk's internal logs. And give read and write access to "Everyone"
+	
+	4. If you expand the "Splunk's Internal Audit Logs - SAMPLE", you can see it has 3 events. If you lookup "Splunk's Internal Server Logs - SAMPLE", it has 21 events and it is more complex. Therefore, we use Audit logs for now.
+	
+	5. Click on "Splunk's Internal Audit Logs - SAMPLE". You can see, this dataset has a root event called "Audit" and that root event has childrens (look left hand side).
+	
+	6. In Constraints you can see index=_audit. You can change it if you want by clicking "Edit".
+	
+	7. To extract new fields you can use "Add Field" drop down list. It gives all extraction feature in there that we discussed in Phase 3.
+	
+	8. Lets try to create report or a dashboard. Click on "Pivot" button. Then choose "Searches".
+	
+	9. Chnages the "Filter" value to "last 24 hours" to narrow down the dataset.
+	
+	10. Now we can split the data by row and columns. Therefore, click the "+" sign under "Split Rows".
+	
+	11. Select "savedsearch name" and give the "Label" as "Name".
+	
+	12. Noe select "_time" in "Split Rows". You can drag and move rows if you want create attractive tables or other purposes.
+	
+	13. In left hand side, you can see chart types. select line chart in there to visuaize our data.
+	
+	14. Now try to use "Split Column" select "search type". Now you can see different type of search columns are there.
+	
+	15. To visualize those data, choose column chart. In "Genaral" section in column chart you can choose "Stack mode" to make chart more readable.
+	
+	16. You can save this as report. Click on Save as > Report. Give a title name (my case "No. of searches"). For now give no to time range picker.
+	
+	17. In new notification bar click on "schedule" link. check the "Schedule Report" box. Select "Run every day". For trigger action select some actions that we discussed in Phase 4.
+	
+	18. It is not run yet because there are no results.
+	
+
+# Phase 7 - Demo (2/3): Build a Dashboard with Pivot
+
+	19. Now click on "Edit" drop down and select "Go to pivot"
+
+	20. Now add the chart as dashboard. click save as > Dashboard panel
+	
+	21. Give dahsboar title as "Splunk Internal". For Dashboard Permissions select "Shared in App". Give panel title same as report title ("No. of searches by type"). Click save.
+	
+	22. Do not view the dashboard yet.
+	
+	23. Now got to "Searches" drop down list and select "View Data Model". Now select "Modify Splunk Configs".
+	
+			- Filters : Last 24 hours
+			- Spliit Rows : _time, path
+			- Column Values : select "path" and setup value to "count". Then click update. 
+			
+	24. Now select line chart and click "Add Color" and select "action".
+	
+	25. Now save this as dashboard panel. Choose existing dashboard. Change "Backup" to "Splunk Internal". Give a panel title ("Number of Changes by Type"). Click save and view the dashboard.
+	
+	26. Now again go to "Searches" and select Spliit Rows as user, host, info with last 24 hours filter. Then click on your host name. You can see all events of our host in there.
+	
+	27. To add color to info column, click on brush icon on info. In color tab choose "values" and select "Define rules".
+	
+	28. You can color word in info column by setting up rules in "Define Rules".
+	
+	29. Now add this colored table to our dashboard. Save as > Dashboard panel.
+	
+	30. Select existing dashboard. Choose "Splunk Internal" dashboard. Give a panel title ("Count of Searches by User") and save it. Now view the dashboard.
+	
+	
+# Phase 8 - Demo (3/3): Build a Data Model
+
+	1. Now, try to create a data model using our homework data set.
+	
+	2. In Splunk server home go to Settings > Data Models.
+	
+	3. Click "New Data Model".
+		
+			- Title : "Security Incidents"
+			- App : Search & Reporting
+		
+	4. Click on "Add Dataset" and select "Root Events"
+		
+			- Dataset Name : All Domains
+			- Constraints : index=main host=splunkmain
+
+	5. Click on "Preview" to check whether it is worked or not before continue forward. If it is working, click on "save".
+	
+	6. Now click "Add Field" drop down and select "Auto Extracted". In there select
+	
+			- usr (user)
+			- scrip (source IP)
+			- level (Alert level)
+			- destip (Destination IP)
+
+	   Click save.
+	   
+	7. Now, lets create child dataset for each domain. Click on "Add Dataset" and select "Child"
+	
+			- Dataset Name : "UK East"
+			- Additional Constraints : domain=east.uk.domain.lcl
+		
+	8. Click "preview". If all things are fine, click "Save"
+	
+	9. Now you can see child "UK east" and it inherits all fields from parent.
+	
+	10. Lets create three more children. Add Dataset > Child
+		
+			- Dataset Name : "UK West"
+			- Additional Constraints : domain=west.uk.domain.lcl
+		
+	11. First preview and Save the child.
+	
+	12. Create another child. Add Dataset > Child
+	
+			- Dataset Name : "East US"
+			- Additional Constraints : domain=east.us.domain.lcl
+		
+	13. First preview and Save the child.
+	
+	14. Create another child. Add Dataset > Child
+	
+			- Dataset Name : "West US"
+			- Additional Constraints : domain=west.us.domain.lcl
+		
+	15. First preview and Save the child.
+	
+	16. Now, we have total 4 childs. Now, click on pivots to create reports or dashboards.
+	
+	18. Before that, we need to give permission to this report. Therefore, go to Splunk server home Settings > Data Models > Select "Search & Reporting" > Edit action of Security Incidents
+	
+	19. Edit > Edit permission > All Apps > give read/write permission to Everyone.
+	
+	17 Select "East Us" to continue.
+	
+			- Filters : All time
+			- Spliit Rows : _time, scrip, level
+			- Column Values : select "path" and setup value to "count". Then click update. 
+			
+	
